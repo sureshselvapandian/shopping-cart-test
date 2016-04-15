@@ -16,6 +16,7 @@ import org.junit.Test;
 
 /**
  * Test for BasketManagerImpl
+ * 
  * @author suresh
  *
  */
@@ -56,8 +57,7 @@ public class BasketManagerImplTest {
 	 */
 	@Test(expected = ValidationException.class)
 	public void testEmptyBasketAndThrowException() {
-		basketManagerImpl.computeBasketTotal(basket);// basket is empty no item
-														// added
+		basketManagerImpl.computeBasketTotal(basket);// basket is empty no item added
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class BasketManagerImplTest {
 		basket.addBasketItem(null);// Add null item
 		basketManagerImpl.computeBasketTotal(basket);
 	}
-	
+
 	/**
 	 * Add a item with null price and test for exception
 	 */
@@ -88,6 +88,18 @@ public class BasketManagerImplTest {
 		basket.addBasketItems(BasketItemsHelper.getBananas(1));
 		BasketItem apples = new Apples();
 		apples.setPrice(null);
+		basket.addBasketItem(apples);
+		basketManagerImpl.computeBasketTotal(basket);
+	}
+
+	/**
+	 * Add a item with zero price and test for exception
+	 */
+	@Test(expected = ValidationException.class)
+	public void testItemPriceForZeroAndthrowException() {
+		basket.addBasketItems(BasketItemsHelper.getBananas(1));
+		BasketItem apples = new Apples();
+		apples.setPrice(BigDecimal.ZERO);
 		basket.addBasketItem(apples);
 		basketManagerImpl.computeBasketTotal(basket);
 	}
