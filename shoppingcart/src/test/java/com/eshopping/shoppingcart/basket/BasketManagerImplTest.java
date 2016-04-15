@@ -1,7 +1,9 @@
 package com.eshopping.shoppingcart.basket;
 
 import com.eshopping.shopping.helper.BasketItemsHelper;
+import com.eshopping.shoppingcart.basket.entities.Apples;
 import com.eshopping.shoppingcart.basket.entities.Basket;
+import com.eshopping.shoppingcart.basket.entities.BasketItem;
 import com.eshopping.shoppingcart.exception.ValidationException;
 
 import static org.junit.Assert.*;
@@ -75,6 +77,18 @@ public class BasketManagerImplTest {
 	public void testBasketForNullItemAndThrowException() {
 		basket.addBasketItems(BasketItemsHelper.getBananas(1));
 		basket.addBasketItem(null);// Add null item
+		basketManagerImpl.computeBasketTotal(basket);
+	}
+	
+	/**
+	 * Add a item with null price and test for exception
+	 */
+	@Test(expected = ValidationException.class)
+	public void testItemPriceForNullAndthrowException() {
+		basket.addBasketItems(BasketItemsHelper.getBananas(1));
+		BasketItem apples = new Apples();
+		apples.setPrice(null);
+		basket.addBasketItem(apples);
 		basketManagerImpl.computeBasketTotal(basket);
 	}
 
