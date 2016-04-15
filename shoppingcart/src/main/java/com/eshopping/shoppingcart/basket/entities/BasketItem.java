@@ -25,13 +25,13 @@ public interface BasketItem {
 	 * Get item price
 	 * @return
 	 */
-	public double getPrice();
+	public BigDecimal getPrice();
 	
 	/**
 	 * Set item price
 	 * @param price
 	 */
-	public void setPrice(final double price);
+	public void setPrice(final BigDecimal price);
 	
 	/**
 	 * Get Quantity of items in this line item 

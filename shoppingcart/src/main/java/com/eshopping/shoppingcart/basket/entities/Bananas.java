@@ -1,5 +1,7 @@
 package com.eshopping.shoppingcart.basket.entities;
 
+import java.math.BigDecimal;
+
 /**
  * Banana entity
  * @author suresh
@@ -8,7 +10,7 @@ package com.eshopping.shoppingcart.basket.entities;
 public class Bananas implements BasketItem {
 	
 	String name = "Bananas";
-	double price = 1.99;
+	BigDecimal price = BigDecimal.valueOf(1.99);
 	int quantity = 2;
 
 	public String getItemName() {
@@ -21,11 +23,11 @@ public class Bananas implements BasketItem {
 		
 	}
 
-	public double getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(final double price) {
+	public void setPrice(final BigDecimal price) {
 		this.price = price;
 	}
 
