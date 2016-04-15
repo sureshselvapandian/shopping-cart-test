@@ -13,7 +13,7 @@ import com.eshopping.shoppingcart.basket.entities.Peaches;
 
 /**
  * Helper to create list of basket items
- * @author selvaps
+ * @author suresh
  *
  */
 public final class BasketItemsHelper {
