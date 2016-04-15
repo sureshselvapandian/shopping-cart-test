@@ -12,8 +12,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test for BasketManagerImpl
+ * @author suresh
+ *
+ */
+
 public class BasketManagerImplTest {
-	
+
 	Basket basket;
 	BasketManagerImpl basketManagerImpl;
 
@@ -22,7 +28,7 @@ public class BasketManagerImplTest {
 		basket = new Basket();
 		basketManagerImpl = new BasketManagerImpl();
 	}
-	
+
 	/**
 	 * Add five items to the basket and test the price calculated are expected.
 	 * The prices are default in the fruits.
@@ -42,23 +48,34 @@ public class BasketManagerImplTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Test a basket with no items and throw exception
 	 */
 	@Test(expected = ValidationException.class)
 	public void testEmptyBasketAndThrowException() {
-		basketManagerImpl.computeBasketTotal(basket);//basket is empty no item added
+		basketManagerImpl.computeBasketTotal(basket);// basket is empty no item
+														// added
 	}
-	
+
 	/**
 	 * Test when the basket is null and throw exception
 	 */
 	@Test(expected = ValidationException.class)
 	public void testNullBasketAndThrowExpection() {
-		basket = null; //basket is null
+		basket = null; // basket is null
 		basketManagerImpl.computeBasketTotal(basket);
 
+	}
+
+	/**
+	 * Add a null item the basket and test for exception
+	 */
+	@Test(expected = ValidationException.class)
+	public void testBasketForNullItemAndThrowException() {
+		basket.addBasketItems(BasketItemsHelper.getBananas(1));
+		basket.addBasketItem(null);// Add null item
+		basketManagerImpl.computeBasketTotal(basket);
 	}
 
 }
