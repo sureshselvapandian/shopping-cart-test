@@ -40,6 +40,16 @@ public class Basket {
 	public boolean addBasketItem(final BasketItem item) {
 		return basketItems.add(item);
 	}
+	
+	/**
+	 * Add an Collection of Items to the basket 
+	 * @param List<BasketItem>
+	 * @return 
+	 * @throws ValidationException
+	 */
+	public boolean addBasketItems(final List<BasketItem> items) {
+		return basketItems.addAll(items);
+	}
 
 	/**
 	 * Gets the list of items
