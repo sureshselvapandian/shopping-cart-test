@@ -42,5 +42,23 @@ public class BasketManagerImplTest {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Test a basket with no items and throw exception
+	 */
+	@Test(expected = ValidationException.class)
+	public void testEmptyBasketAndThrowException() {
+		basketManagerImpl.computeBasketTotal(basket);//basket is empty no item added
+	}
+	
+	/**
+	 * Test when the basket is null and throw exception
+	 */
+	@Test(expected = ValidationException.class)
+	public void testNullBasketAndThrowExpection() {
+		basket = null; //basket is null
+		basketManagerImpl.computeBasketTotal(basket);
+
+	}
 
 }

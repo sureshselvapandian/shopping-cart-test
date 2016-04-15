@@ -23,19 +23,46 @@ public class BasketManagerImpl implements BasketManager {
 	public BigDecimal computeBasketTotal(final Basket basket) {
 		BigDecimal totalBasketPrice = BigDecimal.ZERO;
 
-		if (basket == null || basket.getItemsInBasket() == null || basket.getItemsInBasket().isEmpty())
-			throw new ValidationException("Basket cannot be Null And Should have Items in it");
+		validateBasketAndBasketItemList(basket);
 
 		for (BasketItem basketItem : basket.getItemsInBasket()) {
 			if (basketItem == null)
 				throw new ValidationException("Item cannot be null");
-			if (basketItem.getPrice() == null || basketItem.getPrice() == BigDecimal.ZERO)
-				throw new ValidationException("Price should be available and Not equal to Zero " + basketItem.getItemName());
-			totalBasketPrice = totalBasketPrice.add(basketItem.getPrice().multiply(new BigDecimal(basketItem.getQuantity())));
+			ensurePriceAvailableForItem(basketItem);
+			totalBasketPrice = totalBasketPrice.add(calculatePriceForItem(basketItem));
 		}
 		return totalBasketPrice;
 	}
 
+	/**
+	 * Validate Basket And BasketItemList
+	 * 
+	 * @param basket
+	 */
+	private void validateBasketAndBasketItemList(final Basket basket) {
+		if (basket == null || basket.getItemsInBasket() == null || basket.getItemsInBasket().isEmpty())
+			throw new ValidationException("Basket cannot be Null And Should have Items in it");
+	}
 
+	/**
+	 * Calculate total price for an item
+	 * 
+	 * @param basketItem
+	 * @return basketItem
+	 */
+	private BigDecimal calculatePriceForItem(final BasketItem basketItem) {
+		return basketItem.getPrice().multiply(new BigDecimal(basketItem.getQuantity()));
 
+	}
+
+	/**
+	 * Validate basket items
+	 * 
+	 * @param basketItem
+	 */
+	private void ensurePriceAvailableForItem(final BasketItem basketItem) {
+		if (basketItem.getPrice() == null || basketItem.getPrice() == BigDecimal.ZERO)
+			throw new ValidationException(
+					"Price should be available and Not equal to Zero " + basketItem.getItemName());
+	}
 }
