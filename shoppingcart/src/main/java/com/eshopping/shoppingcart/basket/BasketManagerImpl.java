@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.eshopping.shoppingcart.basket.entities.Basket;
 import com.eshopping.shoppingcart.basket.entities.BasketItem;
-import com.eshopping.shoppingcart.exception.ValidationException;
+import com.eshopping.shoppingcart.basket.validator.BasketAndItemValidator;
 
 /**
  * This class compute total cost of all items in the given basket
@@ -12,6 +12,12 @@ import com.eshopping.shoppingcart.exception.ValidationException;
  * 
  */
 public class BasketManagerImpl implements BasketManager {
+	
+	private BasketAndItemValidator basketAndItemValidator;
+	
+	public BasketManagerImpl(BasketAndItemValidator validator){
+		this.basketAndItemValidator = validator;
+	}
 	
 	/*
 	 * When calculating basket total check for null basket, null basket items and empty baskets 
@@ -23,25 +29,14 @@ public class BasketManagerImpl implements BasketManager {
 	public BigDecimal computeBasketTotal(final Basket basket) {
 		BigDecimal totalBasketPrice = BigDecimal.ZERO;
 
-		validateBasketAndBasketItemList(basket);
+		basketAndItemValidator.validateBasketAndBasketItemList(basket);
 
 		for (BasketItem basketItem : basket.getItemsInBasket()) {
-			if (basketItem == null)
-				throw new ValidationException("Item cannot be null");
-			ensurePriceAvailableForItem(basketItem);
+			basketAndItemValidator.validateBasketItem(basketItem);
+			basketAndItemValidator.ensurePriceAvailableForItem(basketItem);
 			totalBasketPrice = totalBasketPrice.add(calculatePriceForItem(basketItem));
 		}
 		return totalBasketPrice;
-	}
-
-	/**
-	 * Validate Basket And BasketItemList
-	 * 
-	 * @param basket
-	 */
-	private void validateBasketAndBasketItemList(final Basket basket) {
-		if (basket == null || basket.getItemsInBasket() == null || basket.getItemsInBasket().isEmpty())
-			throw new ValidationException("Basket cannot be Null And Should have Items in it");
 	}
 
 	/**
@@ -53,16 +48,5 @@ public class BasketManagerImpl implements BasketManager {
 	private BigDecimal calculatePriceForItem(final BasketItem basketItem) {
 		return basketItem.getPrice().multiply(new BigDecimal(basketItem.getQuantity()));
 
-	}
-
-	/**
-	 * Validate basket items
-	 * 
-	 * @param basketItem
-	 */
-	private void ensurePriceAvailableForItem(final BasketItem basketItem) {
-		if (basketItem.getPrice() == null || basketItem.getPrice() == BigDecimal.ZERO)
-			throw new ValidationException(
-					"Price should be available and Not equal to Zero " + basketItem.getItemName());
 	}
 }

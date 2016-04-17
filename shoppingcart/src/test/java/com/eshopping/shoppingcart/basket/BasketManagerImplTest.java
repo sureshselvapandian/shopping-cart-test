@@ -1,18 +1,19 @@
 package com.eshopping.shoppingcart.basket;
 
-import com.eshopping.shopping.helper.BasketItemsHelper;
-import com.eshopping.shoppingcart.basket.entities.Apples;
-import com.eshopping.shoppingcart.basket.entities.Basket;
-import com.eshopping.shoppingcart.basket.entities.BasketItem;
-import com.eshopping.shoppingcart.exception.ValidationException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.eshopping.shopping.helper.BasketItemsHelper;
+import com.eshopping.shoppingcart.basket.entities.Basket;
+import com.eshopping.shoppingcart.basket.entities.BasketItem;
+import com.eshopping.shoppingcart.basket.validator.BasketAndItemValidator;
+import com.eshopping.shoppingcart.exception.ValidationException;
 
 /**
  * Test for BasketManagerImpl
@@ -25,13 +26,15 @@ public class BasketManagerImplTest {
 
 	Basket basket;
 	BasketManagerImpl basketManagerImpl;
+	BasketAndItemValidator basketAndItemValidatorMock;
 
 	@Before
 	public void setUp() throws Exception {
 		basket = new Basket();
-		basketManagerImpl = new BasketManagerImpl();
+		basketAndItemValidatorMock = mock(BasketAndItemValidator.class);
+		basketManagerImpl = new BasketManagerImpl(basketAndItemValidatorMock);
 	}
-
+	
 	/**
 	 * Add five items to the basket and test the price calculated are expected.
 	 * The prices are default in the fruits.
@@ -45,63 +48,34 @@ public class BasketManagerImplTest {
 			basket.addBasketItems(BasketItemsHelper.getLemons(1));
 			basket.addBasketItems(BasketItemsHelper.getPeaches(1));
 			BigDecimal basketTotal = basketManagerImpl.computeBasketTotal(basket);
+			verify(basketAndItemValidatorMock, times(1)).validateBasketAndBasketItemList(any(Basket.class));
+			verify(basketAndItemValidatorMock, times(5)).validateBasketItem(any(BasketItem.class));
+			verify(basketAndItemValidatorMock, times(5)).ensurePriceAvailableForItem(any(BasketItem.class));
 			Assert.assertEquals(14.76, basketTotal.doubleValue(), 0);
 		} catch (ValidationException e) {
 			fail(" Test failed due to Validation exception ");
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
-	 * Test a basket with no items and throw exception
+	 * Test When ValidateBasketItem Throw Exception
 	 */
 	@Test(expected = ValidationException.class)
-	public void testEmptyBasketAndThrowException() {
-		basketManagerImpl.computeBasketTotal(basket);// basket is empty no item added
+	public void testWhenValidateBasketItemThrowException() {
+		doThrow(new ValidationException()).when(basketAndItemValidatorMock).validateBasketAndBasketItemList(basket);
+		basketManagerImpl.computeBasketTotal(basket);//basket is empty no item added
 	}
-
+	
 	/**
-	 * Test when the basket is null and throw exception
+	 * Test When EnsurePriceAvailableForitem Throw Exception
 	 */
 	@Test(expected = ValidationException.class)
-	public void testNullBasketAndThrowExpection() {
-		basket = null; // basket is null
-		basketManagerImpl.computeBasketTotal(basket);
-
-	}
-
-	/**
-	 * Add a null item the basket and test for exception
-	 */
-	@Test(expected = ValidationException.class)
-	public void testBasketForNullItemAndThrowException() {
+	public void testWhenEnsurePriceAvailableForitemThrowException() {
 		basket.addBasketItems(BasketItemsHelper.getBananas(1));
-		basket.addBasketItem(null);// Add null item
+		doThrow(new ValidationException()).when(basketAndItemValidatorMock).ensurePriceAvailableForItem(basket.getItemsInBasket().get(0));
 		basketManagerImpl.computeBasketTotal(basket);
-	}
 
-	/**
-	 * Add a item with null price and test for exception
-	 */
-	@Test(expected = ValidationException.class)
-	public void testItemPriceForNullAndthrowException() {
-		basket.addBasketItems(BasketItemsHelper.getBananas(1));
-		BasketItem apples = new Apples();
-		apples.setPrice(null);
-		basket.addBasketItem(apples);
-		basketManagerImpl.computeBasketTotal(basket);
 	}
-
-	/**
-	 * Add a item with zero price and test for exception
-	 */
-	@Test(expected = ValidationException.class)
-	public void testItemPriceForZeroAndthrowException() {
-		basket.addBasketItems(BasketItemsHelper.getBananas(1));
-		BasketItem apples = new Apples();
-		apples.setPrice(BigDecimal.ZERO);
-		basket.addBasketItem(apples);
-		basketManagerImpl.computeBasketTotal(basket);
-	}
-
+	
 }
